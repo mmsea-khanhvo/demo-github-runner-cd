@@ -3,5 +3,6 @@
   hosts: target_server
   connection: ssh
   tasks:
-    - name: Hello World
-      command: echo "Hello World"
+    - name: what is ansible_ssh_user 1
+      debug:
+        var: ansible_ssh_user
