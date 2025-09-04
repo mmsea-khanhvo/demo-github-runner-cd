@@ -28,7 +28,7 @@ jobs:
      
       - name: Set deploy key
         run: |
-          gcloud secrets versions access latest --secret="projects/418414695604/secrets/id_ed25519_mmsea_github_runner_selfhost_private_key" --out-file=/tmp/id_rsa
+          gcloud secrets versions access latest --project="418414695604" --secret="id_ed25519_mmsea_github_runner_selfhost_private_key" --out-file=/tmp/id_rsa
           chmod 600 /tmp/id_rsa
       - name: run ansible playbook for deploy
         run: |
