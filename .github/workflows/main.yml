@@ -33,7 +33,7 @@ jobs:
         run: |
           cat .hosts
           cat playbooks/deploy_github_main.yml
-          ansible-playbook -vvv -i .hosts playbooks/deploy_github_main.yml -e "PATH_KEY_FILE=/tmp/id_rsa" -e "ansible_ssh_user=dotnet_admin" -e "ansible_port=12221" --ssh-common-args='-o StrictHostKeyChecking=no'
+          ansible-playbook -i .hosts playbooks/deploy_github_main.yml -e "PATH_KEY_FILE=/tmp/id_rsa" -e "ansible_ssh_user=dotnet_admin" -e "ansible_port=12221" --ssh-common-args='-o StrictHostKeyChecking=no'
     #   - name: Run ansible playbook for deploy
     #     uses: dawidd6/action-ansible-playbook@v2
     #     with:
