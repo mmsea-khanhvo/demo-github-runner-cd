@@ -1,0 +1,44 @@
+name: Build CI
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+      - name: Generate Inventory
+        run: |
+          echo '[target_server]' >> .hosts
+          gcloud compute instances list --filter="(tags.items ~ "admin-server" AND zone ~ asia-east1-a)" --format='table(NAME,EXTERNAL_IP)' | sed '1d' | sed 's/  */ /g' | sed 's/ / ansible_host=/g' >> .hosts
+          
+      - name: run ansible playbook for deploy
+        run: |
+          ansible-playbook -i .hosts playbooks/deploy_github_main.yml
+    #   - name: Run ansible playbook for deploy
+    #     uses: dawidd6/action-ansible-playbook@v2
+    #     with:
+    #       # Required, playbook filepath
+    #       playbook: playbooks/deploy_github_main.yml
+    #       # Optional, directory where playbooks live
+    #       directory: ./
+    #       # Optional, ansible configuration file content (ansible.cfg)
+    #       configuration: |
+    #         [defaults]
+    #         callbacks_enabled = ansible.posix.profile_tasks, ansible.posix.timer
+    #         stdout_callback = yaml
+    #         nocows = false
+    #       # Optional, SSH private key
+    #       key: ${{secrets.SSH_KEY}}
+    #       # Optional, literal inventory file contents
+    #       options: |
+    #         --inventory .hosts
+    #         --extra-vars PROJECT_PATH=${{secrets.PROJECT_PATH}}
+    #         --extra-vars BRANCH=${{env.BRANCH_NAME}}
+    #         --extra-vars REPO_PROD=${{env.REPO_GIT}}
+    #         --extra-vars PATH_KEY_FILE=/tmp/id_rsa
+    #         --extra-vars ansible_ssh_user=${{secrets.SSH_USER}}
+    #         --extra-vars ansible_port=${{secrets.DEPLOY_PORTS}}
+          # --verbose

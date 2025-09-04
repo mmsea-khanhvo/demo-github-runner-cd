@@ -1,0 +1,7 @@
+- name: Deploy source code
+  # script be run on server with tag "leave-form"
+  hosts: target_server
+  connection: ssh
+  tasks:
+    - name: Hello World
+      command: echo "Hello World"
