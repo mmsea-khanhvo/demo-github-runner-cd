@@ -25,10 +25,9 @@ jobs:
           echo '[target_server]' >> .hosts
           gcloud compute instances list --filter="(tags.items ~ ${{ env.GCP_TAG_NAME }} AND zone ~ ${{ env.GCP_ZONE_NAME }})" --format='table(NAME,EXTERNAL_IP)' | sed '1d' | sed 's/  */ /g' | sed 's/ / ansible_host=/g' >> .hosts
 
-     
       - name: Set deploy key
         run: |
-          gcloud secrets versions access latest --project="418414695604" --secret="id_ed25519_mmsea_github_runner_selfhost_private_key" --out-file=/tmp/id_rsa
+          gcloud secrets versions access latest --project="418414695604" --secret="id_ed25519_mmsea_github_runner_selfhost_private_key" > /tmp/id_rsa
           chmod 600 /tmp/id_rsa
       - name: run ansible playbook for deploy
         run: |
