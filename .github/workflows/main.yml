@@ -11,15 +11,24 @@ jobs:
       - uses: actions/checkout@v4
       - name: Set environment variables
         run: |
+
+
+            echo "setup ENV"
             if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.event_name }}" == "pull_request" ]]; then
                 # Production environment
-                echo "GCP_TAG_NAME=admin-server" >> $GITHUB_ENV
-                echo "GCP_ZONE_NAME=asia-east1-a" >> $GITHUB_ENV
+                gcloud secrets versions access latest --project="418414695604" --secret="voice_prod_github_env_config" > setup.sh
+                
             else
                 # Development environment
-                echo "GCP_TAG_NAME=dev-admin-server" >> $GITHUB_ENV
-                echo "GCP_ZONE_NAME=asia-east1-c" >> $GITHUB_ENV
             fi
+
+            chmod +x setup.sh
+            ./setup.sh
+            echo "::add-mask::${{ env.ANSIBLE_USER }}"
+            echo "::add-mask::${{ env.ANSIBLE_PORT }}"
+            echo "::add-mask::${{ env.GCP_TAG_NAME }}"
+            echo "::add-mask::${{ env.GCP_ZONE_NAME }}"
+            echo "::add-mask::${{ env.PLAYBOOK_PATH }}"
       - name: Generate Inventory
         run: |
           echo '[target_server]' >> .hosts
@@ -31,9 +40,7 @@ jobs:
           chmod 600 /tmp/id_rsa
       - name: run ansible playbook for deploy
         run: |
-          cat .hosts
-          cat playbooks/deploy_github_main.yml
-          ansible-playbook -i .hosts playbooks/deploy_github_main.yml -e "PATH_KEY_FILE=/tmp/id_rsa" -e "ansible_ssh_user=dotnet_admin" -e "ansible_port=12221" --ssh-common-args='-o StrictHostKeyChecking=no'
+          ansible-playbook -i .hosts ${{ env.PLAYBOOK_PATH }} -e "PATH_KEY_FILE=/tmp/id_rsa" -e "ansible_ssh_user=${{ env.ANSIBLE_USER }}" -e "ansible_port=${{ env.ANSIBLE_PORT }}" --ssh-common-args='-o StrictHostKeyChecking=no' 
     #   - name: Run ansible playbook for deploy
     #     uses: dawidd6/action-ansible-playbook@v2
     #     with:
