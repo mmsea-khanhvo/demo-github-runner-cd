@@ -11,15 +11,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: Set environment variables
         run: |
-
-
             echo "setup ENV"
             if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.event_name }}" == "pull_request" ]]; then
                 # Production environment
-                gcloud secrets versions access latest --project="418414695604" --secret="voice_prod_github_env_config" > setup.sh
-                
+                gcloud secrets versions access latest --project="418414695604" --secret="voice_prod_github_env_config" > setup.sh   
             else
                 # Development environment
+                gcloud secrets versions access latest --project="418414695604" --secret="voice_dev_github_env_config" > setup.sh
             fi
 
             chmod +x setup.sh
