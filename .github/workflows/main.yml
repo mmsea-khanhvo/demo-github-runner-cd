@@ -23,11 +23,13 @@ jobs:
 
             chmod +x setup.sh
             ./setup.sh
-            echo "::add-mask::${{ env.ANSIBLE_USER }}"
-            echo "::add-mask::${{ env.ANSIBLE_PORT }}"
-            echo "::add-mask::${{ env.GCP_TAG_NAME }}"
-            echo "::add-mask::${{ env.GCP_ZONE_NAME }}"
-            echo "::add-mask::${{ env.PLAYBOOK_PATH }}"
+      - name: Hide environment variables
+        run: |
+          echo "::add-mask::${{ env.ANSIBLE_USER }}"
+          echo "::add-mask::${{ env.ANSIBLE_PORT }}"
+          echo "::add-mask::${{ env.GCP_TAG_NAME }}"
+          echo "::add-mask::${{ env.GCP_ZONE_NAME }}"
+          echo "::add-mask::${{ env.PLAYBOOK_PATH }}"
       - name: Generate Inventory
         run: |
           echo '[target_server]' >> .hosts
