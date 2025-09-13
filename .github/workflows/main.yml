@@ -17,6 +17,4 @@ jobs:
     needs: deploy
     steps:
       - uses: actions/checkout@v4
-      - name: Test
-        run: |
-          echo "Job 2 is running"
+      - uses: ./.github/workflows/test.yml
