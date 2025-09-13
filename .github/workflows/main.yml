@@ -17,4 +17,4 @@ jobs:
     needs: deploy
     steps:
       - uses: actions/checkout@v4
-      - uses: mmsea-khanhvo/demo-github-runner-cd/.github/workflows/test/test.yml
+      - uses: mmsea-khanhvo/demo-github-runner-cd/.github/workflows/test/test.yml@main
