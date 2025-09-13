@@ -9,61 +9,13 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
-      - name: Set environment variables
+      - name: Test
         run: |
-            echo "setup ENV"
-            if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.event_name }}" == "pull_request" ]]; then
-                # Production environment
-                echo "PLAYBOOK_PATH=playbooks/deploy_github_main.yml" >> $GITHUB_ENV
-                gcloud secrets versions access latest --project="418414695604" --secret="voice_prod_github_env_config" > setup.sh   
-            else
-                # Development environment
-                gcloud secrets versions access latest --project="418414695604" --secret="voice_dev_github_env_config" > setup.sh
-            fi
-
-            chmod +x setup.sh
-            ./setup.sh
-      - name: Hide environment variables
+          echo "Job 1 is running"
+  test:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test
         run: |
-          echo "::add-mask::${{ env.ANSIBLE_USER }}"
-          echo "::add-mask::${{ env.ANSIBLE_PORT }}"
-          echo "::add-mask::${{ env.GCP_TAG_NAME }}"
-          echo "::add-mask::${{ env.GCP_ZONE_NAME }}"
-          echo "::add-mask::${{ env.PLAYBOOK_PATH }}"
-      - name: Generate Inventory
-        run: |
-          echo '[target_server]' >> .hosts
-          gcloud compute instances list --filter="(tags.items ~ ${{ env.GCP_TAG_NAME }} AND zone ~ ${{ env.GCP_ZONE_NAME }})" --format='table(NAME,EXTERNAL_IP)' | sed '1d' | sed 's/  */ /g' | sed 's/ / ansible_host=/g' >> .hosts
-
-      - name: Set deploy key
-        run: |
-          gcloud secrets versions access latest --project="418414695604" --secret="id_ed25519_mmsea_github_runner_selfhost_private_key" > /tmp/id_rsa
-          chmod 600 /tmp/id_rsa
-      - name: run ansible playbook for deploy
-        run: |
-          ansible-playbook -i .hosts ${{ env.PLAYBOOK_PATH }} -e "PATH_KEY_FILE=/tmp/id_rsa" -e "ansible_ssh_user=${{ env.ANSIBLE_USER }}" -e "ansible_port=${{ env.ANSIBLE_PORT }}" --ssh-common-args='-o StrictHostKeyChecking=no' 
-    #   - name: Run ansible playbook for deploy
-    #     uses: dawidd6/action-ansible-playbook@v2
-    #     with:
-    #       # Required, playbook filepath
-    #       playbook: playbooks/deploy_github_main.yml
-    #       # Optional, directory where playbooks live
-    #       directory: ./
-    #       # Optional, ansible configuration file content (ansible.cfg)
-    #       configuration: |
-    #         [defaults]
-    #         callbacks_enabled = ansible.posix.profile_tasks, ansible.posix.timer
-    #         stdout_callback = yaml
-    #         nocows = false
-    #       # Optional, SSH private key
-    #       key: ${{secrets.SSH_KEY}}
-    #       # Optional, literal inventory file contents
-    #       options: |
-    #         --inventory .hosts
-    #         --extra-vars PROJECT_PATH=${{secrets.PROJECT_PATH}}
-    #         --extra-vars BRANCH=${{env.BRANCH_NAME}}
-    #         --extra-vars REPO_PROD=${{env.REPO_GIT}}
-    #         --extra-vars PATH_KEY_FILE=/tmp/id_rsa
-    #         --extra-vars ansible_ssh_user=${{secrets.SSH_USER}}
-    #         --extra-vars ansible_port=${{secrets.DEPLOY_PORTS}}
-          # --verbose
+          echo "Job 2 is running"
