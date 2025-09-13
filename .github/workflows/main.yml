@@ -12,6 +12,8 @@ jobs:
       - name: Test
         run: |
           echo "Job 1 is running"
+      - name: Print GitHub Context
+        run: echo "${{ toJson(github) }}"
 
   deploy-test:
       needs: deploy
