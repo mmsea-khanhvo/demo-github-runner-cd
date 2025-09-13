@@ -17,4 +17,8 @@ jobs:
     needs: deploy
     steps:
       - uses: actions/checkout@v4
+      - name: Test
+        run: |
+          pwd
+          ls -la
       - uses: .github/workflows/test/test.yml
