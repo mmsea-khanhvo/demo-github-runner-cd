@@ -1,9 +1,9 @@
-name: Build CI
+name: Test
 on: workflow_call
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    needs: deploy
     steps:
       - uses: actions/checkout@v4
       - name: Test
